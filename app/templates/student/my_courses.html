@@ -1,0 +1,53 @@
+{% extends "base.html" %}
+
+{% block title %}Мои курсы{% endblock %}
+
+{% block content %}
+<div class="row">
+    <div class="col-12">
+        <h2 class="mb-4">Мои курсы</h2>
+
+        {% for item in courses %}
+        <div class="card course-card mb-3">
+            <div class="row g-0">
+                <div class="col-md-2 course-progress-box d-flex align-items-center justify-content-center p-3">
+                    <div class="text-center">
+                        <div class="fs-2 fw-bold text-mp-green">{{ item.progress }}%</div>
+                        <small class="text-muted">прогресс</small>
+                    </div>
+                </div>
+                <div class="col-md-10">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-start">
+                            <div>
+                                <h5 class="card-title mb-1">{{ item.course.title }}</h5>
+                                <p class="card-text text-muted small mb-2">
+                                    Автор: {{ item.course.author.full_name or item.course.author.email }}
+                                </p>
+                            </div>
+                            <span class="badge bg-light text-dark border">{{ item.completed_lessons }}/{{ item.total_lessons }} уроков</span>
+                        </div>
+
+                        <div class="progress mb-3" style="height: 8px;">
+                            <div class="progress-bar" role="progressbar"
+                                 style="width: {{ item.progress }}%;"
+                                 aria-valuenow="{{ item.progress }}"
+                                 aria-valuemin="0"
+                                 aria-valuemax="100">
+                            </div>
+                        </div>
+
+                        <div class="d-flex justify-content-between align-items-center">
+                            <small class="text-muted">Средний балл: <strong>{{ item.avg }}</strong></small>
+                            <a href="{{ url_for('student.course_detail', course_id=item.course.id) }}" class="btn btn-primary btn-sm px-4">Перейти к курсу</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        {% else %}
+        <div class="alert alert-info">Вы пока не записаны ни на один курс.</div>
+        {% endfor %}
+    </div>
+</div>
+{% endblock %}

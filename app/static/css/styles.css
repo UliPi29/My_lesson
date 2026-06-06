@@ -1,0 +1,166 @@
+:root {
+    --mp-green: #177245;
+    --mp-green-dark: #145a38;
+    --mp-green-light: #e8f5e9;
+    --mp-bg: #f4f9f7;
+}
+
+body {
+    background-color: var(--mp-bg);
+}
+
+/* ===== Шапка ===== */
+.navbar {
+    background-color: var(--mp-green) !important;
+}
+.navbar-brand,
+.navbar-nav .nav-link {
+    color: #fff !important;
+}
+.navbar-nav .nav-link:hover {
+    opacity: 0.85;
+}
+
+/* ===== Кнопки — rounded-3 ===== */
+.btn {
+    border-radius: 0.5rem !important;
+}
+.btn-sm {
+    border-radius: 0.375rem !important;
+}
+
+/* Primary / Success → изумруд */
+.btn-primary,
+.btn-success {
+    background-color: var(--mp-green) !important;
+    border-color: var(--mp-green) !important;
+    color: #fff !important;
+}
+.btn-primary:hover,
+.btn-success:hover {
+    background-color: var(--mp-green-dark) !important;
+    border-color: var(--mp-green-dark) !important;
+}
+
+/* Outline-primary */
+.btn-outline-primary {
+    color: var(--mp-green) !important;
+    border-color: var(--mp-green) !important;
+}
+.btn-outline-primary:hover {
+    background-color: var(--mp-green) !important;
+    color: #fff !important;
+}
+
+/* Outline-secondary / danger / warning / info */
+.btn-outline-secondary,
+.btn-outline-danger,
+.btn-outline-warning,
+.btn-secondary,
+.btn-danger,
+.btn-warning,
+.btn-info {
+    border-radius: 0.5rem !important;
+}
+
+/* ===== Формы ===== */
+.form-control:focus,
+.form-select:focus {
+    border-color: var(--mp-green);
+    box-shadow: 0 0 0 0.25rem rgba(23, 114, 69, 0.25);
+}
+
+/* ===== Ссылки ===== */
+a {
+    color: var(--mp-green);
+}
+a:hover {
+    color: var(--mp-green-dark);
+}
+
+/* ===== Прогресс ===== */
+.progress-bar {
+    background-color: var(--mp-green) !important;
+}
+.progress-bar.bg-success,
+.progress-bar.bg-primary {
+    background-color: var(--mp-green) !important;
+}
+
+/* ===== Карточки ===== */
+.card {
+    border-color: #d1e7dd;
+    background-color: #fff;
+}
+
+/* ===== Таблицы ===== */
+.table-light {
+    --bs-table-bg: var(--mp-green-light);
+    --bs-table-color: #000;
+}
+
+/* ===== Вкладки ===== */
+.nav-tabs .nav-link.active {
+    color: var(--mp-green) !important;
+    border-color: var(--mp-green) !important;
+    border-bottom-color: #fff !important;
+    font-weight: 600;
+}
+
+/* ===== Модалка ===== */
+.modal-content {
+    border-radius: 0.5rem;
+}
+
+/* ===== Главная страница ===== */
+.hero-title {
+    color: var(--mp-green);
+}
+.about-section {
+    background-color: #e9ecef;
+    margin: 0 -15px;
+}
+.text-mp-green {
+    color: var(--mp-green);
+}
+
+/* ===== Вкладки входа/регистрации ===== */
+.auth-tabs {
+    display: flex;
+    border-bottom: 2px solid var(--mp-green);
+}
+.auth-tab {
+    flex: 1;
+    text-align: center;
+    padding: 10px 0;
+    text-decoration: none;
+    color: #333;
+    border: 1px solid #ccc;
+    border-bottom: none;
+    background: #f8f9fa;
+}
+.auth-tab.active {
+    color: #fff;
+    background: var(--mp-green);
+    border-color: var(--mp-green);
+    font-weight: 500;
+}
+.auth-box {
+    border: 1px solid #ccc;
+    border-top: none;
+    padding: 24px 20px 20px;
+    background: #fff;
+}
+
+/* ===== Карточка курса ученика ===== */
+.course-card {
+    transition: transform 0.1s ease, box-shadow 0.1s ease;
+}
+.course-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(23, 114, 69, 0.1);
+}
+.course-progress-box {
+    background-color: var(--mp-green-light);
+    min-width: 100px;
+}

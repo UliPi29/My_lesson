@@ -1,0 +1,77 @@
+{% extends "base.html" %}
+{% block title %}Успеваемость: {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+
+    <!-- КНОПКА ВВЕРХУ -->
+    <a href="{{ url_for('teacher.statistics') }}" class="btn btn-secondary mb-3">← К общей статистике</a>
+
+    <h4 class="text-center mb-4">Успеваемость: {{ course.title }}</h4>
+
+    <!-- ФИЛЬТРАЦИЯ: убраны пустые value, добавлен onchange -->
+    <div class="d-flex justify-content-center gap-3 mb-3">
+        <select class="form-select w-auto" onchange="sortTable('name', this.value)">
+            <option value="">ФИО</option>
+            <option value="asc">А → Я</option>
+            <option value="desc">Я → А</option>
+        </select>
+        <select class="form-select w-auto" onchange="sortTable('progress', this.value)">
+            <option value="">Прогресс</option>
+            <option value="asc">По возрастанию</option>
+            <option value="desc">По убыванию</option>
+        </select>
+        <select class="form-select w-auto" onchange="sortTable('grade', this.value)">
+            <option value="">Средний балл</option>
+            <option value="asc">По возрастанию</option>
+            <option value="desc">По убыванию</option>
+        </select>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle" id="statsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>ФИО</th>
+                    <th>Процент пройденных уроков</th>
+                    <th>Средний балл за курс</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stats %}
+                <tr data-name="{{ s.student.full_name or s.student.email }}"
+                    data-progress="{{ s.progress }}"
+                    data-grade="{{ s.avg_score }}">
+                    <td>{{ s.student.full_name or s.student.email }}</td>
+                    <td>{{ s.progress }}%</td>
+                    <td>{{ s.avg_score }}</td>
+                </tr>
+                {% else %}
+                <tr><td colspan="3" class="text-center text-muted">На курс не зачислены ученики</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+
+</div>
+
+<script>
+function sortTable(col, order) {
+    if (!order) return;                       // «—» выбрана — ничего не делаем
+    const table = document.getElementById('statsTable');
+    const rows = Array.from(table.querySelectorAll('tbody tr'));
+    const isAsc = order === 'asc';
+
+    rows.sort((a, b) => {
+        let valA = a.getAttribute('data-' + col);
+        let valB = b.getAttribute('data-' + col);
+        if (col === 'name') {
+            return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
+        }
+        return isAsc ? parseFloat(valA) - parseFloat(valB) : parseFloat(valB) - parseFloat(valA);
+    });
+
+    rows.forEach(row => table.querySelector('tbody').appendChild(row));
+}
+</script>
+{% endblock %}

@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Вход{% endblock %}
+{% block content %}
+<div style="max-width: 340px; margin: 60px auto 0;">
+
+    <div class="auth-tabs">
+        <a href="{{ url_for('auth.register') }}" class="auth-tab">Регистрация</a>
+        <span class="auth-tab active">Авторизация</span>
+    </div>
+
+    <div class="auth-box">
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.email(class="form-control", placeholder="email") }}
+            </div>
+            <div class="mb-3">
+                {{ form.password(class="form-control", placeholder="пароль") }}
+            </div>
+            <div class="form-check mb-3">
+                {{ form.remember_me(class="form-check-input") }}
+                {{ form.remember_me.label(class="form-check-label", style="font-size:13px;") }}
+            </div>
+            <div class="text-center">
+                {{ form.submit(class="btn btn-primary w-100", value="Войти") }}
+            </div>
+        </form>
+    </div>
+
+</div>
+
+<div style="max-width: 340px; margin: 20px auto 0;" class="card rounded-0">
+    <div class="card-body">
+        <h6 class="mb-2">Краткая информация о платформе</h6>
+        <p class="small text-muted mb-0">
+            Онлайн-школа позволяет учителям создавать курсы, а ученикам — проходить уроки, сдавать тесты и загружать задания.
+        </p>
+    </div>
+</div>
+{% endblock %}

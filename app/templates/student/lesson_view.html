@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}{{ lesson.title }}{% endblock %}
+{% block content %}
+<a href="{{ url_for('student.course_detail', course_id=lesson.course_id) }}" class="btn btn-secondary mb-3">← К списку уроков</a>
+
+<h4 class="mb-3">{{ lesson.title }}</h4>
+<ul class="nav nav-tabs mb-3">
+    <li class="nav-item">
+        <a class="nav-link {{ 'active' if tab=='materials' }}" href="?tab=materials">📚 Материалы</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ 'active' if tab=='assignment' }}" href="?tab=assignment">📝 Задание</a>
+    </li>
+    <li class="nav-item">
+        <a class="nav-link {{ 'active' if tab=='test' }}" href="?tab=test">❓ Тест</a>
+    </li>
+</ul>
+
+{% if tab == 'materials' %}
+    <div class="card p-3 mb-3 bg-light">{{ lesson.content|safe or '<p class="text-muted">Материалы не добавлены</p>' }}</div>
+    {% if materials %}
+        <h6>Прикреплённые файлы:</h6>
+        {% for f in materials %}
+        <div class="d-flex justify-content-between align-items-center border p-2 mb-2 rounded">
+            <span>📎 {{ f.original_name }}</span>
+            <a href="{{ url_for('teacher.download_file', file_id=f.id) }}" class="btn btn-sm btn-outline-primary">Скачать</a>
+        </div>
+        {% endfor %}
+    {% else %}
+        <p class="text-muted">Файлы не загружены</p>
+    {% endif %}
+
+{% elif tab == 'assignment' %}
+    <div class="card p-3 mb-3 bg-light">{{ lesson.assignment|safe or '<p class="text-muted">Задание не добавлено</p>' }}</div>
+    
+    {% if submission %}
+    <div class="alert alert-info">
+        <strong>Работа сдана:</strong> {{ submission.file.original_name }}<<br>
+        <a href="{{ url_for('teacher.download_file', file_id=submission.file_id) }}" class="btn btn-sm btn-outline-primary mt-2">Скачать мою работу</a><br>
+        <small>Оценка: <strong>{{ submission.grade or 'Ожидает проверки' }}</strong></small><br>
+        <small>Комментарий: {{ submission.feedback or '—' }}</small>
+    </div>
+    {% endif %}
+    
+    <div class="card">
+        <div class="card-body">
+            <h6>Отправить новую версию:</h6>
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('student.submit_assignment', lesson_id=lesson.id) }}">
+                <input type="file" name="file" class="form-control mb-2" required>
+                <button type="submit" class="btn btn-success">Отправить задание</button>
+            </form>
+        </div>
+    </div>
+
+{% elif tab == 'test' %}
+    {% if test %}
+        {% set result = test.test_results.filter_by(student_id=current_user.id).first() %}
+        {% if result %}
+            <div class="alert alert-success">
+                <h5>Тест пройден</h5>
+                <p>Ваш результат: <strong>{{ result.score }}/{{ result.total }}</strong></p>
+                <a href="{{ url_for('student.take_test', lesson_id=lesson.id) }}" class="btn btn-outline-primary">Пересдать</a>
+            </div>
+        {% else %}
+            <div class="card p-4 text-center">
+                <h5>{{ test.title }}</h5>
+                <p class="text-muted">Вопросов: {{ test.questions.count() }}</p>
+                <a href="{{ url_for('student.take_test', lesson_id=lesson.id) }}" class="btn btn-primary btn-lg">Начать тест</a>
+            </div>
+        {% endif %}
+    {% else %}
+        <p class="text-muted">Тест к этому уроку не создан.</p>
+    {% endif %}
+{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Личный кабинет{% endblock %}
+{% block content %}
+<h4>{{ current_user.full_name or current_user.email }}</h4>
+<h5 class="mt-4">Успеваемость</h5>
+<table class="table table-bordered">
+    <tr><th>Курс</th><th>Прогресс</th><th>Средний балл</th></tr>
+    {% for s in stats %}
+    <tr>
+        <td>{{ s.course.title }}</td>
+        <td>{{ s.completed }}/{{ s.total }}</td>
+        <td>{{ s.avg }}</td>
+    </tr>
+    {% else %}
+    <tr><td colspan="3" class="text-center text-muted">Нет данных</td></tr>
+    {% endfor %}
+</table>
+{% endblock %}

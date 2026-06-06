@@ -1,0 +1,61 @@
+{% extends "base.html" %}
+{% block title %}Статистика платформы{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h4 class="mb-4">Общая статистика платформы</h4>
+    
+    <div class="row">
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-primary">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_users }}</h5>
+                    <p class="card-text">Всего пользователей</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-success">
+                <div class="card-body">
+                    <h5 class="card-title">{{ students }}</h5>
+                    <p class="card-text">Учеников</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-info">
+                <div class="card-body">
+                    <h5 class="card-title">{{ teachers }}</h5>
+                    <p class="card-text">Учителей</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-3 mb-3">
+            <div class="card text-white bg-warning">
+                <div class="card-body">
+                    <h5 class="card-title">{{ admins }}</h5>
+                    <p class="card-text">Администраторов</p>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-3">
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ total_courses }}</h5>
+                    <p class="card-text">Всего курсов создано</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6">
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="card-title">{{ avg_score }}</h5>
+                    <p class="card-text">Средний балл по всем курсам</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

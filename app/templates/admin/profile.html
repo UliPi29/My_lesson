@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+{% block title %}Профиль администратора{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h4>Профиль администратора</h4>
+    <p><strong>Email:</strong> {{ current_user.email }}</p>
+    <p><strong>ФИО:</strong> {{ current_user.full_name or 'Не указано' }}</p>
+    
+    <hr>
+    <h5>Смена пароля</h5>
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.current_password.label(class="form-label") }}
+            {{ form.current_password(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.new_password.label(class="form-label") }}
+            {{ form.new_password(class="form-control") }}
+        </div>
+        <div class="mb-3">
+            {{ form.confirm_password.label(class="form-label") }}
+            {{ form.confirm_password(class="form-control") }}
+        </div>
+        {{ form.submit(class="btn btn-primary") }}
+    </form>
+</div>
+{% endblock %}

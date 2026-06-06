@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Общая статистика{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <a href="{{ url_for('teacher.my_courses') }}" class="btn btn-secondary mb-3">← К курсам</a>
+
+    <h4 class="text-center mb-4">Статистика</h4>
+
+    <div class="d-flex justify-content-center mb-3">
+        <div class="input-group w-50">
+            <input type="text" class="form-control" id="courseSearch" placeholder="Поиск по названию курса..." value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="button" onclick="filterCourses()">🔍</button>
+        </div>
+    </div>
+
+    <div class="table-responsive">
+        <table class="table table-bordered align-middle" id="statsTable">
+            <thead class="table-light">
+                <tr>
+                    <th>Курс</th>
+                    <th>Количество учеников</th>
+                    <th>Процент пройденных уроков</th>
+                    <th>Средний балл за курс</th>
+                    <th>Действия</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for s in stats %}
+                <tr data-title="{{ s.course.title | lower }}">
+                    <td>{{ s.course.title }}</td>
+                    <td>{{ s.total_students }}</td>
+                    <td>{{ s.avg_progress }}%</td>
+                    <td>{{ s.avg_grade }}</td>
+                    <td>
+                        <a href="{{ url_for('teacher.course_performance', course_id=s.course.id) }}" class="btn btn-sm btn-primary">Успеваемость</a>
+                    </td>
+                </tr>
+                {% else %}
+                <tr><td colspan="5" class="text-center text-muted">Нет данных для отображения</td></tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+
+<script>
+function filterCourses() {
+    const val = document.getElementById('courseSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#statsTable tbody tr[data-title]');
+    rows.forEach(row => {
+        const title = row.getAttribute('data-title');
+        row.style.display = title.includes(val) ? '' : 'none';
+    });
+}
+document.getElementById('courseSearch').addEventListener('keyup', filterCourses);
+</script>
+{% endblock %}

@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+{% block title %}Проверка работы{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h4>Проверка работы ученика</h4>
+    <p><strong>Ученик:</strong> {{ submission.student.full_name or submission.student.email }}</p>
+    <p><strong>Урок:</strong> {{ submission.lesson.title }}</p>
+    <p><strong>Файл:</strong> <a href="{{ url_for('teacher.download_file', file_id=submission.file_id) }}">📎 Скачать работу</a></p>
+    
+    <form method="POST">
+        {{ form.hidden_tag() }}
+        <div class="mb-3">
+            {{ form.grade.label(class="form-label") }}
+            {{ form.grade(class="form-control", min=0, max=5, step=0.1) }}
+        </div>
+        <div class="mb-3">
+            {{ form.feedback.label(class="form-label") }}
+            {{ form.feedback(class="form-control", rows=4) }}
+        </div>
+        {{ form.submit(class="btn btn-success") }}
+        <a href="{{ url_for('teacher.lesson_assignment', lesson_id=submission.lesson_id) }}" class="btn btn-secondary">← К заданиям урока</a>
+    </form>
+</div>
+{% endblock %}

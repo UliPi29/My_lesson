@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+{% block title %}Работы ученика{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{{ url_for('teacher.course_students', course_id=course.id) }}" class="btn btn-secondary mb-3">← К ученикам курса</a>
+    
+    <h4>Работы ученика: {{ student.full_name or student.email }}</h4>
+    <p class="text-muted">Курс: {{ course.title }}</p>
+    
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>Урок</th>
+                <th>Дата сдачи</th>
+                <th>Файл</th>
+                <th>Оценка</th>
+                <th>Комментарий</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for sub in submissions %}
+            <tr>
+                <td>{{ sub.lesson.title }}</td>
+                <td>{{ sub.submitted_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('teacher.download_file', file_id=sub.file_id) }}" class="btn btn-sm btn-outline-primary">Скачать</a>
+                </td>
+                <td>
+                    {% if sub.grade %}
+                        <span class="badge bg-success">{{ sub.grade }}</span>
+                    {% else %}
+                        <span class="badge bg-warning">Не проверено</span>
+                    {% endif %}
+                </td>
+                <td>{{ sub.feedback or '—' }}</td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">Нет сданных работ</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

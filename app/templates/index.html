@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+
+<!-- Hero -->
+<div class="text-center py-5">
+    <h1 class="display-4 fw-bold mb-3 hero-title">My lesson</h1>
+    <p class="lead text-muted mb-4">Платформа для организации дистанционного обучения</p>
+</div>
+
+<!-- О проекте — заметная карточка под заголовком -->
+<div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+        <div class="card border-0 shadow-sm bg-light">
+            <div class="card-body text-center py-3">
+                <h6 class="fw-bold mb-2 text-uppercase text-success" style="letter-spacing: 1px;">О проекте</h6>
+                <p class="small text-muted mb-1">
+                    <strong>Выполнила:</strong> Пешкова Ульяна Игоревна &nbsp;|&nbsp; <strong>Группа:</strong> 241-326
+                </p>
+                <p class="small text-muted mb-1">
+                    <strong>Дисциплина:</strong> Разработка веб-приложений
+                </p>
+                <p class="small text-muted mb-1">
+                    <strong>Учебное заведение:</strong> Московский политехнический университет
+                </p>
+                <p class="small text-muted mb-0">
+                    Курсовой проект &nbsp;|&nbsp; 2026 г.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Возможности — вертикально, прямоугольные -->
+<div class="row justify-content-center mb-5">
+    <div class="col-md-8">
+
+        <div class="card rounded-0 mb-3 border-start-0 border-end-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="fs-1 me-4">📚</div>
+                <div>
+                    <h5 class="card-title mb-1">Управление курсами</h5>
+                    <p class="card-text text-muted mb-0">Создавайте уроки, загружайте материалы и формируйте учебную программу.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rounded-0 mb-3 border-start-0 border-end-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="fs-1 me-4">📝</div>
+                <div>
+                    <h5 class="card-title mb-1">Тестирование и задания</h5>
+                    <p class="card-text text-muted mb-0">Автоматическая проверка знаний и приём файлов от учеников.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rounded-0 mb-3 border-start-0 border-end-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="fs-1 me-4">📊</div>
+                <div>
+                    <h5 class="card-title mb-1">Статистика успеваемости</h5>
+                    <p class="card-text text-muted mb-0">Отслеживайте прогресс учеников и анализируйте результаты обучения.</p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card rounded-0 mb-3 border-start-0 border-end-0">
+            <div class="card-body d-flex align-items-center">
+                <div class="fs-1 me-4">📎</div>
+                <div>
+                    <h5 class="card-title mb-1">Обмен файлами</h5>
+                    <p class="card-text text-muted mb-0">Учебные материалы и выполненные работы — всё в одном месте.</p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+{% endblock %}

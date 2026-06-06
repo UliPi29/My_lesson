@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+{% block title %}Прохождение теста{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h4>{{ test.title }}</h4>
+    <form method="POST">
+        {% for question in test.questions %}
+        <div class="card mb-3">
+            <div class="card-body">
+                <p class="card-text"><strong>{{ loop.index }}. {{ question.text }}</strong></p>
+                
+                {% if question.question_type == 'single_choice' %}
+                    {% for option in question.answer_options %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="radio" name="q_{{ question.id }}" id="opt_{{ option.id }}" value="{{ option.id }}" required>
+                        <label class="form-check-label" for="opt_{{ option.id }}">
+                            {{ option.text }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                {% else %}
+                    {% for option in question.answer_options %}
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" name="q_{{ question.id }}" id="opt_{{ option.id }}" value="{{ option.id }}">
+                        <label class="form-check-label" for="opt_{{ option.id }}">
+                            {{ option.text }}
+                        </label>
+                    </div>
+                    {% endfor %}
+                {% endif %}
+            </div>
+        </div>
+        {% endfor %}
+        
+        <button type="submit" class="btn btn-success">Завершить тест</button>
+        <a href="{{ url_for('student.lesson_view', course_id=test.lesson.course_id, lesson_id=test.lesson_id, tab='test') }}" class="btn btn-secondary">Отмена</a>
+    </form>
+</div>
+{% endblock %}

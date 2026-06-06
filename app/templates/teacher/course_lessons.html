@@ -1,0 +1,48 @@
+{% extends "base.html" %}
+{% block title %}Уроки курса {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container mt-4">
+    <h3>{{ course.title }}</h3>
+
+    <div class="mb-3">
+        {% if not current_user.is_admin() %}
+        <a href="{{ url_for('teacher.create_lesson', course_id=course.id) }}" class="btn btn-success">Создать урок</a>
+        {% endif %}
+        {% if current_user.is_admin() %}
+            <a href="{{ url_for('admin.courses') }}" class="btn btn-secondary">← К курсам</a>
+        {% else %}
+            <a href="{{ url_for('teacher.my_courses') }}" class="btn btn-secondary">← К курсам</a>
+        {% endif %}
+    </div>
+
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Урок №</th>
+                <th>Название урока</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for lesson in lessons %}
+            <tr>
+                <td>{{ loop.index }}</td>
+                <td>{{ lesson.title }}</td>
+                <td>
+                    <a href="{{ url_for('teacher.lesson_materials', lesson_id=lesson.id) }}" class="btn btn-sm btn-primary">Содержимое</a>
+                    <a href="{{ url_for('teacher.edit_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-warning">Изменить</a>
+                    <form method="POST" action="{{ url_for('teacher.delete_lesson', lesson_id=lesson.id) }}" style="display:inline;" onsubmit="return confirmAction(this.action, 'Удалить урок «{{ lesson.title }}»?');">
+                        <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr>
+                <td colspan="3" class="text-center text-muted">В курсе пока нет уроков</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

@@ -1,0 +1,55 @@
+{% extends "base.html" %}
+{% block title %}Ученики курса{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <a href="{{ url_for('teacher.my_courses') }}" class="btn btn-secondary mb-3">← К курсам</a>
+    
+    <h4>Ученики курса «{{ course.title }}»</h4>
+    
+    <div class="card mb-4">
+        <div class="card-body">
+            <h5>Добавить ученика</h5>
+            <form method="POST" action="{{ url_for('teacher.enroll_student', course_id=course.id) }}">
+                <div class="input-group">
+                    <input type="email" name="email" class="form-control" placeholder="Email ученика" required>
+                    <button type="submit" class="btn btn-success">Добавить</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>ФИО</th>
+                <th>Email</th>
+                <th>Прогресс по курсу</th>
+                <th>Дата зачисления</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in students_data %}
+            <tr>
+                <td>{{ item.student.full_name or '—' }}</td>
+                <td>{{ item.student.email }}</td>
+                <td>
+                    <div class="progress" style="height: 20px;">
+                        <div class="progress-bar {{ 'bg-success' if item.progress == 100 else 'bg-primary' }}" role="progressbar" style="width: {{ item.progress }}%;" aria-valuenow="{{ item.progress }}" aria-valuemin="0" aria-valuemax="100">{{ item.progress }}%</div>
+                    </div>
+                </td>
+                <td>{{ item.enrolled_at.strftime('%d.%m.%Y %H:%M') }}</td>
+                <td>
+                    <a href="{{ url_for('teacher.student_works', course_id=course.id, student_id=item.student.id) }}" class="btn btn-sm btn-outline-primary">Посмотреть работы</a>
+                    <form method="POST" action="{{ url_for('teacher.unroll_student', course_id=course.id, student_id=item.student.id) }}" style="display:inline;" onsubmit="return confirmAction(this.action, 'Отчислить ученика {{ item.student.full_name or item.student.email }} с курса?');">
+                        <button type="submit" class="btn btn-sm btn-outline-danger">Отчислить</button>
+                    </form>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="5" class="text-center text-muted">На курс пока никто не записан</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

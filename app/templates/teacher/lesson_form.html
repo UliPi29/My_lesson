@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+
+{% block title %}
+    {% if lesson %}Редактирование урока{% else %}Создание урока{% endif %}
+{% endblock %}
+
+{% block content %}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <h2>
+            {% if lesson %}
+                Редактировать урок «{{ lesson.title }}»
+            {% else %}
+                Создать урок
+            {% endif %}
+        </h2>
+        <form method="POST">
+            {{ form.hidden_tag() }}
+            <div class="mb-3">
+                {{ form.title.label(class="form-label") }}
+                {{ form.title(class="form-control") }}
+                {% for error in form.title.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            <div class="mb-3">
+                {{ form.order_num.label(class="form-label") }}
+                {{ form.order_num(class="form-control") }}
+                {% for error in form.order_num.errors %}
+                    <div class="text-danger">{{ error }}</div>
+                {% endfor %}
+            </div>
+            {{ form.submit(class="btn btn-primary") }}
+            {% if course %}
+                <a href="{{ url_for('teacher.course_lessons', course_id=course.id) }}" class="btn btn-secondary">Отмена</a>
+            {% else %}
+                <a href="{{ url_for('teacher.course_lessons', course_id=lesson.course_id) }}" class="btn btn-secondary">Отмена</a>
+            {% endif %}
+        </form>
+    </div>
+</div>
+{% endblock %}

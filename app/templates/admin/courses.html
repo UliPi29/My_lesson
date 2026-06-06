@@ -1,0 +1,57 @@
+{% extends "base.html" %}
+{% block title %}Все курсы{% endblock %}
+{% block content %}
+<div class="container mt-4">
+    <h4>Все курсы платформы</h4>
+
+    <div class="d-flex justify-content-center mb-3">
+        <div class="input-group w-50">
+            <input type="text" class="form-control" id="courseSearch" placeholder="Поиск по названию или учителю..." value="{{ search or '' }}">
+            <button class="btn btn-outline-secondary" type="button" onclick="filterCourses()">🔍</button>
+        </div>
+    </div>
+
+    <table class="table table-bordered table-hover" id="coursesTable">
+        <thead class="table-light">
+            <tr>
+                <th>Название</th>
+                <th>Автор</th>
+                <th>Уроков</th>
+                <th>Учеников</th>
+                <th>Дата создания</th>
+                <th>Действия</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for course in courses %}
+            <tr data-title="{{ course.title | lower }}" data-author="{{ (course.author.full_name or course.author.email) | lower }}">
+                <td>{{ course.title }}</td>
+                <td>{{ course.author.full_name or course.author.email }}</td>
+                <td>{{ course.lessons.count() }}</td>
+                <td>{{ course.enrollments.count() }}</td>
+                <td>{{ course.created_at.strftime('%d.%m.%Y') }}</td>
+                <td>
+                    <a href="{{ url_for('teacher.course_lessons', course_id=course.id) }}" class="btn btn-sm btn-primary">Уроки</a>
+                    <a href="{{ url_for('teacher.delete_course', course_id=course.id) }}" class="btn btn-sm btn-danger" onclick="return confirm('Удалить курс?')">Удалить</a>
+                </td>
+            </tr>
+            {% else %}
+            <tr><td colspan="6" class="text-center text-muted">Курсов пока нет</td></tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+
+<script>
+function filterCourses() {
+    const val = document.getElementById('courseSearch').value.toLowerCase();
+    const rows = document.querySelectorAll('#coursesTable tbody tr[data-title]');
+    rows.forEach(row => {
+        const title = row.getAttribute('data-title');
+        const author = row.getAttribute('data-author');
+        row.style.display = (title.includes(val) || author.includes(val)) ? '' : 'none';
+    });
+}
+document.getElementById('courseSearch').addEventListener('keyup', filterCourses);
+</script>
+{% endblock %}

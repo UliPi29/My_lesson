@@ -1,3 +1,4 @@
+"""Скрипт для создания администратора в приложении."""
 from dotenv import load_dotenv
 load_dotenv()
 from app import create_app, db
@@ -6,7 +7,6 @@ from app.models import User
 app = create_app()
 
 with app.app_context():
-    # Проверяем, нет ли уже админа
     existing = User.query.filter_by(email='admin@test.ru').first()
     if existing:
         print("Администратор уже существует!")

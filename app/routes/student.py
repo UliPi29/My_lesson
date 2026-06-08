@@ -6,59 +6,22 @@ import uuid, os
 from sqlalchemy import func
 from app import db
 from app.storage import upload_file
+from app.routes.calc_student import calc_student_avg, calc_student_progress
 
 bp = Blueprint('student', __name__, url_prefix='/student')
 
-def _calc_student_avg(student_id, course):
-    """Средний балл ученика: тесты + задания"""
-    total_score = 0
-    items = 0
-    for lesson in course.lessons:
-        if lesson.test:
-            res = TestResult.query.filter_by(student_id=student_id, test_id=lesson.test.id).first()
-            if res and res.total > 0:
-                total_score += (res.score / res.total * 5)
-                items += 1
-        sub = Submission.query.filter_by(student_id=student_id, lesson_id=lesson.id).first()
-        if sub and sub.grade is not None:
-            total_score += sub.grade
-            items += 1
-    return round((total_score / items), 2) if items > 0 else 0
-
-def _calc_student_progress(student_id, course):
-    """Процент пройденных уроков (тест + задание, если есть)"""
-    total = course.lessons.count()
-    if total == 0:
-        return 0
-    completed = 0
-    for lesson in course.lessons:
-        lesson_done = True
-        
-        # Проверка теста
-        if lesson.test:
-            if not TestResult.query.filter_by(student_id=student_id, test_id=lesson.test.id).first():
-                lesson_done = False
-        
-        # Проверка задания: если текст задания есть, нужно сдать файл
-        if lesson.assignment and lesson.assignment.strip():
-            if not Submission.query.filter_by(student_id=student_id, lesson_id=lesson.id).first():
-                lesson_done = False
-        
-        if lesson_done:
-            completed += 1
-    
-    return round((completed / total * 100), 1)
 
 @bp.route('/my_courses')
 @login_required
 def my_courses():
+    """Отображает список курсов, на которые записан студент, с прогрессом и средним баллом."""
     if not current_user.is_student(): abort(403)
     enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
     courses_data = []
     for enr in enrollments:
         course = enr.course
-        progress = _calc_student_progress(current_user.id, course)
-        avg = _calc_student_avg(current_user.id, course)
+        progress = calc_student_progress(current_user.id, course)
+        avg = calc_student_avg(current_user.id, course)
         completed = 0
         for lesson in course.lessons:
             lesson_done = True
@@ -79,9 +42,11 @@ def my_courses():
         })
     return render_template('student/my_courses.html', courses=courses_data)
 
+
 @bp.route('/course/<int:course_id>')
 @login_required
 def course_detail(course_id):
+    """Показывает страницу курса со списком уроков и статусом их выполнения."""
     course = Course.query.get_or_404(course_id)
     if not Enrollment.query.filter_by(student_id=current_user.id, course_id=course_id).first() and not current_user.is_admin():
         abort(403)
@@ -98,9 +63,11 @@ def course_detail(course_id):
         lesson_progress[lesson.id] = lesson_done
     return render_template('student/course_detail.html', course=course, lessons=lessons, lesson_progress=lesson_progress)
 
+
 @bp.route('/course/<int:course_id>/lessons/<int:lesson_id>')
 @login_required
 def lesson_view(course_id, lesson_id):
+    """Отображает содержимое урока (материалы, тест, задание) в зависимости от выбранной вкладки."""
     lesson = Lesson.query.get_or_404(lesson_id)
     if lesson.course_id != course_id: abort(404)
     tab = request.args.get('tab', 'materials')
@@ -109,9 +76,11 @@ def lesson_view(course_id, lesson_id):
     submission = Submission.query.filter_by(student_id=current_user.id, lesson_id=lesson_id).first()
     return render_template('student/lesson_view.html', lesson=lesson, tab=tab, materials=materials, test=test, submission=submission)
 
+
 @bp.route('/lesson/<int:lesson_id>/test/take', methods=['GET', 'POST'])
 @login_required
 def take_test(lesson_id):
+    """Обрабатывает прохождение теста: GET — показывает вопросы, POST — проверяет и сохраняет результат."""
     lesson = Lesson.query.get_or_404(lesson_id)
     test = lesson.test
     if not test: abort(404)
@@ -141,9 +110,11 @@ def take_test(lesson_id):
         return redirect(url_for('student.lesson_view', course_id=lesson.course_id, lesson_id=lesson_id, tab='test'))
     return render_template('student/take_test.html', test=test)
 
+
 @bp.route('/lesson/<int:lesson_id>/submit', methods=['POST'])
 @login_required
 def submit_assignment(lesson_id):
+    """Принимает загруженный файл с заданием и сохраняет его как ответ студента."""
     lesson = Lesson.query.get_or_404(lesson_id)
     if 'file' not in request.files:
         flash('Нет файла', 'danger')
@@ -156,7 +127,7 @@ def submit_assignment(lesson_id):
     safe = secure_filename(original_name)
     ext = os.path.splitext(safe)[1] or os.path.splitext(original_name)[1]
     unique_name = f"{uuid.uuid4().hex}{ext}"
-    file_path = upload_file(file, unique_name, 'submission')
+    file_path = upload_file(file, unique_name)
     db_file = File(filename=unique_name, original_name=original_name, file_path=file_path, file_type='submission', uploader_id=current_user.id, lesson_id=lesson.id)
     db.session.add(db_file)
     db.session.commit()
@@ -172,9 +143,11 @@ def submit_assignment(lesson_id):
     flash(f'Файл «{original_name}» успешно отправлен', 'success')
     return redirect(url_for('student.lesson_view', course_id=lesson.course_id, lesson_id=lesson.id, tab='assignment'))
 
+
 @bp.route('/profile')
 @login_required
 def profile():
+    """Показывает личную статистику студента по всем курсам (успеваемость и прогресс)."""
     if not current_user.is_student(): abort(403)
     enrollments = Enrollment.query.filter_by(student_id=current_user.id).all()
     stats = []
@@ -191,6 +164,6 @@ def profile():
                     lesson_done = False
             if lesson_done:
                 completed += 1
-        avg = _calc_student_avg(current_user.id, course)
+        avg = calc_student_avg(current_user.id, course)
         stats.append({'course': course, 'completed': completed, 'total': course.lessons.count(), 'avg': avg})
     return render_template('student/profile.html', stats=stats)

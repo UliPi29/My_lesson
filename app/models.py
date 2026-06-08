@@ -39,8 +39,8 @@ class Lesson(db.Model):
     __tablename__ = 'lessons'
     id = db.Column(db.Integer, primary_key=True)
     title = db.Column(db.String(200), nullable=False)
-    content = db.Column(db.Text)        # Теория / материалы
-    assignment = db.Column(db.Text)     # Задание для учеников
+    content = db.Column(db.Text)
+    assignment = db.Column(db.Text)
     course_id = db.Column(db.Integer, db.ForeignKey('courses.id', ondelete='CASCADE'), nullable=False)
     order_num = db.Column(db.Integer)
     files = db.relationship('File', backref='lesson', lazy='dynamic', cascade='all, delete-orphan')

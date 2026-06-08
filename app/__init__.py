@@ -14,12 +14,16 @@ login.login_view = 'auth.login'
 login.login_message = 'Пожалуйста, войдите.'
 login.login_message_category = 'warning'
 
+
 @login.user_loader
 def load_user(user_id):
+    """Загружает пользователя по ID для Flask-Login."""
     from app.models import User
     return db.session.get(User, int(user_id))
 
+
 def create_app():
+    """Создаёт и настраивает экземпляр Flask-приложения."""
     app = Flask(__name__)
     app.config.from_object(Config)
 
@@ -41,6 +45,7 @@ def create_app():
 
     @app.route('/')
     def index():
+        """Перенаправляет авторизованного пользователя в его профиль, иначе показывает главную."""
         if current_user.is_authenticated:
             if current_user.is_teacher():
                 return redirect(url_for('teacher.profile'))

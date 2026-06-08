@@ -8,8 +8,10 @@ from flask import Blueprint
 
 bp = Blueprint('auth', __name__, url_prefix='/auth')
 
+
 @bp.route('/register', methods=['GET', 'POST'])
 def register():
+    """Регистрирует нового пользователя с ролью 'student'."""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = RegistrationForm()
@@ -30,8 +32,10 @@ def register():
         return redirect(url_for('auth.login'))
     return render_template('auth/register.html', form=form)
 
+
 @bp.route('/login', methods=['GET', 'POST'])
 def login():
+    """Аутентифицирует пользователя и перенаправляет на соответствующую страницу."""
     if current_user.is_authenticated:
         return redirect(url_for('index'))
     form = LoginForm()
@@ -40,7 +44,7 @@ def login():
         if user is None or not user.check_password(form.password.data):
             flash('Неверный email или пароль.', 'danger')
             return redirect(url_for('auth.login'))
-        # Проверка блокировки
+
         if user.is_blocked:
             flash('Ваш аккаунт заблокирован. Обратитесь к администратору.', 'danger')
             return redirect(url_for('auth.login'))
@@ -56,7 +60,9 @@ def login():
         return redirect(next_page)
     return render_template('auth/login.html', form=form)
 
+
 @bp.route('/logout')
 def logout():
+    """Выполняет выход пользователя из системы."""
     logout_user()
     return redirect(url_for('index'))

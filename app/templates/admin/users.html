@@ -37,14 +37,18 @@
         </thead>
         <tbody>
             {% for u in users %}
+            {% set action_text = 'Разблокировать' if u.is_blocked else 'Заблокировать' %}
+            {% set user_display = u.full_name or u.email %}
             <tr class="{{ 'table-danger' if u.is_blocked }}">
                 <td>{{ u.full_name or '—' }}</td>
                 <td>{{ u.email }}</td>
                 <td>{{ u.role }}</td>
                 <td>{% if u.is_blocked %}<span class="badge bg-danger">Заблокирован</span>{% else %}<span class="badge bg-success">Активен</span>{% endif %}</td>
                 <td>
-                    <a href="{{ url_for('admin.toggle_block', user_id=u.id) }}" class="btn btn-sm btn-warning">{{ 'Разблокировать' if u.is_blocked else 'Заблокировать' }}</a>
-                    <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" style="display:inline;" onsubmit="return confirm('Удалить пользователя?');">
+                    <form method="POST" action="{{ url_for('admin.toggle_block', user_id=u.id) }}" style="display:inline;" onsubmit="return confirmFormSubmit(this, '{{ action_text }} пользователя {{ user_display }}?', 'Подтвердить');">
+                        <button type="submit" class="btn btn-sm btn-warning">{{ action_text }}</button>
+                    </form>
+                    <form method="POST" action="{{ url_for('admin.delete_user', user_id=u.id) }}" style="display:inline;" onsubmit="return confirmFormSubmit(this, 'Удалить пользователя {{ user_display }}?', 'Удалить');">
                         <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
                     </form>
                 </td>

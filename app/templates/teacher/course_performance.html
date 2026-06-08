@@ -4,12 +4,10 @@
 {% block content %}
 <div class="container mt-4">
 
-    <!-- КНОПКА ВВЕРХУ -->
     <a href="{{ url_for('teacher.statistics') }}" class="btn btn-secondary mb-3">← К общей статистике</a>
 
     <h4 class="text-center mb-4">Успеваемость: {{ course.title }}</h4>
 
-    <!-- ФИЛЬТРАЦИЯ: убраны пустые value, добавлен onchange -->
     <div class="d-flex justify-content-center gap-3 mb-3">
         <select class="form-select w-auto" onchange="sortTable('name', this.value)">
             <option value="">ФИО</option>
@@ -54,24 +52,4 @@
     </div>
 
 </div>
-
-<script>
-function sortTable(col, order) {
-    if (!order) return;                       // «—» выбрана — ничего не делаем
-    const table = document.getElementById('statsTable');
-    const rows = Array.from(table.querySelectorAll('tbody tr'));
-    const isAsc = order === 'asc';
-
-    rows.sort((a, b) => {
-        let valA = a.getAttribute('data-' + col);
-        let valB = b.getAttribute('data-' + col);
-        if (col === 'name') {
-            return isAsc ? valA.localeCompare(valB) : valB.localeCompare(valA);
-        }
-        return isAsc ? parseFloat(valA) - parseFloat(valB) : parseFloat(valB) - parseFloat(valA);
-    });
-
-    rows.forEach(row => table.querySelector('tbody').appendChild(row));
-}
-</script>
 {% endblock %}

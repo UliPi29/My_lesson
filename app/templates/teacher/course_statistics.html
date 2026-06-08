@@ -10,7 +10,6 @@
     <div class="d-flex justify-content-center mb-3">
         <div class="input-group w-50">
             <input type="text" class="form-control" id="courseSearch" placeholder="Поиск по названию курса..." value="{{ search or '' }}">
-            <button class="btn btn-outline-secondary" type="button" onclick="filterCourses()">🔍</button>
         </div>
     </div>
 
@@ -45,14 +44,8 @@
 </div>
 
 <script>
-function filterCourses() {
-    const val = document.getElementById('courseSearch').value.toLowerCase();
-    const rows = document.querySelectorAll('#statsTable tbody tr[data-title]');
-    rows.forEach(row => {
-        const title = row.getAttribute('data-title');
-        row.style.display = title.includes(val) ? '' : 'none';
+    document.getElementById('courseSearch').addEventListener('keyup', function() {
+        filterTable('courseSearch', 'statsTable');
     });
-}
-document.getElementById('courseSearch').addEventListener('keyup', filterCourses);
 </script>
 {% endblock %}

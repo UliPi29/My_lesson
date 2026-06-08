@@ -6,14 +6,18 @@ from app import db
 
 bp = Blueprint('admin', __name__, url_prefix='/admin')
 
+
 @bp.before_request
 def check_admin():
+    """Проверяет, является ли текущий пользователь администратором."""
     if not current_user.is_admin():
         return "Доступ запрещён", 403
+
 
 @bp.route('/users')
 @login_required
 def users():
+    """Отображает список пользователей с фильтрацией по роли и статусу блокировки."""
     query = User.query.filter(User.id != current_user.id)
 
     role = request.args.get('role')
@@ -29,9 +33,11 @@ def users():
     users = query.order_by(User.created_at.desc()).all()
     return render_template('admin/users.html', users=users, role=role, status=status)
 
+
 @bp.route('/users/create', methods=['GET', 'POST'])
 @login_required
 def create_user():
+    """Создаёт нового пользователя (учителя или администратора)."""
     if request.method == 'POST':
         email = request.form.get('email')
         role = request.form.get('role', 'teacher')
@@ -53,31 +59,39 @@ def create_user():
         return redirect(url_for('admin.users'))
     return render_template('admin/create_user.html')
 
-@bp.route('/users/<int:user_id>/toggle_block')
+
+@bp.route('/users/<int:user_id>/toggle_block', methods=['POST'])
 @login_required
 def toggle_block(user_id):
+    """Переключает статус блокировки пользователя (администратора заблокировать нельзя)."""
     user = User.query.get_or_404(user_id)
-    if user.role == 'admin': flash('Администратора нельзя заблокировать', 'warning')
+    if user.role == 'admin':
+        flash('Администратора нельзя заблокировать', 'warning')
     else:
         user.is_blocked = not user.is_blocked
         db.session.commit()
         flash('Статус изменён', 'success')
     return redirect(url_for('admin.users'))
 
+
 @bp.route('/users/<int:user_id>/delete', methods=['POST'])
 @login_required
 def delete_user(user_id):
+    """Удаляет пользователя, если он не администратор."""
     user = User.query.get_or_404(user_id)
-    if user.role == 'admin': flash('Нельзя удалить админа', 'warning')
+    if user.role == 'admin':
+        flash('Нельзя удалить админа', 'warning')
     else:
         db.session.delete(user)
         db.session.commit()
         flash('Пользователь удалён', 'success')
     return redirect(url_for('admin.users'))
 
+
 @bp.route('/courses')
 @login_required
 def courses():
+    """Отображает список курсов с возможностью поиска по названию или автору."""
     query = Course.query
     search = request.args.get('q', '').strip()
     if search:
@@ -91,9 +105,11 @@ def courses():
     courses = query.order_by(Course.created_at.desc()).all()
     return render_template('admin/courses.html', courses=courses, search=search)
 
+
 @bp.route('/statistics')
 @login_required
 def statistics():
+    """Вычисляет и отображает общую статистику по платформе."""
     total_users = User.query.count()
     admins = User.query.filter_by(role='admin').count()
     teachers = User.query.filter_by(role='teacher').count()
@@ -121,13 +137,15 @@ def statistics():
 
     avg_score = round(sum(active_avgs) / len(active_avgs), 2) if active_avgs else 0
 
-    return render_template('admin/statistics.html', 
+    return render_template('admin/statistics.html',
                            total_users=total_users, admins=admins, teachers=teachers, students=students,
                            total_courses=total_courses, avg_score=avg_score)
+
 
 @bp.route('/profile', methods=['GET', 'POST'])
 @login_required
 def profile():
+    """Позволяет администратору изменить свой пароль."""
     form = ChangePasswordForm()
     if form.validate_on_submit():
         if current_user.check_password(form.current_password.data):

@@ -1,9 +1,10 @@
 import os
 from dotenv import load_dotenv
 load_dotenv()
+
 from flask import Flask, redirect, render_template, url_for
 from flask_sqlalchemy import SQLAlchemy
-from flask_migrate import Migrate
+from flask_migrate import Migrate, upgrade
 from flask_login import LoginManager, current_user
 from config import Config
 
@@ -43,6 +44,12 @@ def create_app():
 
     os.makedirs(app.config['UPLOAD_FOLDER'], exist_ok=True)
 
+    # Автоматическое накатывание миграций и создание админа (для хостинга Render)
+    with app.app_context():
+        upgrade()
+
+        _ensure_admin_exists()
+
     @app.route('/')
     def index():
         """Перенаправляет авторизованного пользователя в его профиль, иначе показывает главную."""
@@ -55,3 +62,24 @@ def create_app():
         return render_template('index.html')
 
     return app
+
+
+def _ensure_admin_exists():
+    """Проверяет наличие администратора и создаёт его при необходимости."""
+    from app.models import User
+
+    admin_email = 'admin@test.ru'
+    admin_password = os.environ.get('ADMIN_DEFAULT_PASSWORD', 'admin123')
+
+    if User.query.filter_by(email=admin_email).first() is None:
+        admin = User(
+            full_name='Администратор',
+            email=admin_email,
+            role='admin'
+        )
+        admin.set_password(admin_password)
+        db.session.add(admin)
+        db.session.commit()
+        print(f"Администратор {admin_email} создан. Пароль: {admin_password}")
+    else:
+        print(f"Администратор {admin_email} уже существует.")

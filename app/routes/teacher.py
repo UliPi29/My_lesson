@@ -209,7 +209,7 @@ def edit_lesson_content(lesson_id):
 def lesson_assignment(lesson_id):
     """Показывает страницу с заданием урока и списком сданных работ."""
     lesson = Lesson.query.get_or_404(lesson_id)
-    if lesson.course.author_id != current_user.id:
+    if lesson.course.author_id != current_user.id and not current_user.is_admin():
         abort(403)
     return render_template('teacher/lesson_assignment.html', lesson=lesson, active='assignment')
 

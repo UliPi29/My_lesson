@@ -32,7 +32,7 @@
                 <td>
                     <a href="{{ url_for('teacher.lesson_materials', lesson_id=lesson.id) }}" class="btn btn-sm btn-primary">Содержимое</a>
                     <a href="{{ url_for('teacher.edit_lesson', lesson_id=lesson.id) }}" class="btn btn-sm btn-warning">Изменить</a>
-                    <form method="POST" action="{{ url_for('teacher.delete_lesson', lesson_id=lesson.id) }}" style="display:inline;" onsubmit="return confirmAction(this.action, 'Удалить урок «{{ lesson.title }}»?');">
+                    <form method="POST" action="{{ url_for('teacher.delete_lesson', lesson_id=lesson.id) }}" style="display:inline;" onsubmit="return confirm('Удалить урок «{{ lesson.title }}»?');">
                         <button type="submit" class="btn btn-sm btn-danger">Удалить</button>
                     </form>
                 </td>

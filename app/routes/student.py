@@ -3,9 +3,8 @@ from flask_login import login_required, current_user
 from app.models import Enrollment, Lesson, TestResult, Course, File, Submission, Test, Question, AnswerOption, UserAnswer
 from werkzeug.utils import secure_filename
 import uuid, os
-from sqlalchemy import func
 from app import db
-from app.storage import upload_file
+from app.storage import delete_file, upload_file
 from app.routes.calc_student import calc_student_avg, calc_student_progress
 
 bp = Blueprint('student', __name__, url_prefix='/student')
@@ -116,30 +115,51 @@ def take_test(lesson_id):
 def submit_assignment(lesson_id):
     """Принимает загруженный файл с заданием и сохраняет его как ответ студента."""
     lesson = Lesson.query.get_or_404(lesson_id)
+
     if 'file' not in request.files:
         flash('Нет файла', 'danger')
         return redirect(url_for('student.lesson_view', course_id=lesson.course_id, lesson_id=lesson.id, tab='assignment'))
+
     file = request.files['file']
     if file.filename == '':
         flash('Файл не выбран', 'warning')
         return redirect(url_for('student.lesson_view', course_id=lesson.course_id, lesson_id=lesson.id, tab='assignment'))
+
     original_name = file.filename
     safe = secure_filename(original_name)
     ext = os.path.splitext(safe)[1] or os.path.splitext(original_name)[1]
     unique_name = f"{uuid.uuid4().hex}{ext}"
     file_path = upload_file(file, unique_name)
-    db_file = File(filename=unique_name, original_name=original_name, file_path=file_path, file_type='submission', uploader_id=current_user.id, lesson_id=lesson.id)
+
+    db_file = File(
+        filename=unique_name,
+        original_name=original_name,
+        file_path=file_path,
+        file_type='submission',
+        uploader_id=current_user.id,
+        lesson_id=lesson.id
+    )
     db.session.add(db_file)
     db.session.commit()
+
     sub = Submission.query.filter_by(student_id=current_user.id, lesson_id=lesson_id).first()
+    old_file = None
     if sub:
+        old_file = sub.file
         sub.file_id = db_file.id
         sub.grade = None
         sub.feedback = None
     else:
         sub = Submission(student_id=current_user.id, lesson_id=lesson_id, file_id=db_file.id)
         db.session.add(sub)
+
     db.session.commit()
+
+    if old_file:
+        delete_file(old_file.file_path)
+        db.session.delete(old_file)
+        db.session.commit()
+
     flash(f'Файл «{original_name}» успешно отправлен', 'success')
     return redirect(url_for('student.lesson_view', course_id=lesson.course_id, lesson_id=lesson.id, tab='assignment'))
 

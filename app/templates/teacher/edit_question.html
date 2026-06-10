@@ -18,8 +18,11 @@
                 <option value="multiple_choice" {% if question.question_type == 'multiple_choice' %}selected{% endif %}>Несколько правильных ответов</option>
             </select>
             <div id="typeWarning" class="form-text text-warning d-none">
-                ⚠️ Нажмите «← К тесту», чтобы сохранить изменение типа, иначе при добавлении варианта будет использован старый тип.
+                ⚠️ Для сохранения нового типа вопроса нажмите «Сохранить изменения».
             </div>
+        </div>
+        <div class="mb-3">
+            <button type="submit" class="btn btn-primary">Сохранить изменения</button>
         </div>
     </form>
 

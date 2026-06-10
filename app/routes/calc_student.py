@@ -7,7 +7,10 @@ def calc_student_avg(student_id, course):
     items = 0
     for lesson in course.lessons:
         if lesson.test:
-            res = TestResult.query.filter_by(student_id=student_id, test_id=lesson.test.id).first()
+            res = TestResult.query.filter_by(
+                student_id=student_id, 
+                test_id=lesson.test.id
+            ).order_by(TestResult.completed_at.desc()).first()
             if res and res.total > 0:
                 total_score += (res.score / res.total * 5)
                 items += 1

@@ -496,7 +496,7 @@ def edit_question(question_id):
         question.question_type = new_type
         db.session.commit()
         flash('Вопрос обновлён', 'success')
-        return redirect(url_for('teacher.lesson_test', lesson_id=question.test.lesson_id))
+        return redirect(url_for('teacher.edit_question', question_id=question.id))
 
     if request.method == 'POST' and 'add_option' in request.form:
         text = request.form.get('option_text', '').strip()
